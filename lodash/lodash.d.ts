@@ -8987,16 +8987,17 @@ declare module _ {
          * @param resolver The function to resolve the cache key.
          * @return Returns the new memoizing function.
          */
-        memoize<TResult extends MemoizedFunction>(
-            func: Function,
-            resolver?: Function): TResult;
+        memoize: {
+            <T extends Function>(func: T, resolver?: Function): T & MemoizedFunction;
+            Cache: MapCache;
+        }
     }
 
     interface LoDashImplicitObjectWrapper<T> {
         /**
          * @see _.memoize
          */
-        memoize<TResult extends MemoizedFunction>(resolver?: Function): LoDashImplicitObjectWrapper<TResult>;
+        memoize(resolver?: Function): LoDashImplicitObjectWrapper<T & MemoizedFunction>;
     }
 
     //_.overArgs (was _.modArgs)
@@ -16307,6 +16308,31 @@ declare module _ {
         noop(...args: any[]): _.LoDashExplicitWrapper<void>;
     }
 
+    //_.nthArg
+    interface LoDashStatic {
+        /**
+         * Creates a function that returns its nth argument.
+         *
+         * @param n The index of the argument to return.
+         * @return Returns the new function.
+         */
+        nthArg<TResult extends Function>(n?: number): TResult;
+    }
+
+    interface LoDashImplicitWrapper<T> {
+        /**
+         * @see _.nthArg
+         */
+        nthArg<TResult extends Function>(): LoDashImplicitObjectWrapper<TResult>;
+    }
+
+    interface LoDashExplicitWrapper<T> {
+        /**
+         * @see _.nthArg
+         */
+        nthArg<TResult extends Function>(): LoDashExplicitObjectWrapper<TResult>;
+    }
+
     //_.over
     interface LoDashStatic {
         /**
@@ -16631,18 +16657,16 @@ declare module _ {
     //_.times
     interface LoDashStatic {
         /**
-         * Invokes the iteratee function n times, returning an array of the results of each invocation. The iteratee is
-         * bound to thisArg and invoked with one argument; (index).
+         * Invokes the iteratee function n times, returning an array of the results of each invocation. The iteratee
+         * is invoked with one argument; (index).
          *
          * @param n The number of times to invoke iteratee.
          * @param iteratee The function invoked per iteration.
-         * @param thisArg The this binding of iteratee.
          * @return Returns the array of results.
          */
         times<TResult>(
             n: number,
-            iteratee: (num: number) => TResult,
-            thisArg?: any
+            iteratee: (num: number) => TResult
         ): TResult[];
 
         /**
@@ -16656,14 +16680,13 @@ declare module _ {
          * @see _.times
          */
         times<TResult>(
-            iteratee: (num: number) => TResult,
-            thisArgs?: any
-        ): LoDashImplicitArrayWrapper<TResult>;
+            iteratee: (num: number) => TResult
+        ): TResult[];
 
         /**
          * @see _.times
          */
-        times(): LoDashImplicitArrayWrapper<number>;
+        times(): number[];
     }
 
     interface LoDashExplicitWrapper<T> {
@@ -16671,8 +16694,7 @@ declare module _ {
          * @see _.times
          */
         times<TResult>(
-            iteratee: (num: number) => TResult,
-            thisArgs?: any
+            iteratee: (num: number) => TResult
         ): LoDashExplicitArrayWrapper<TResult>;
 
         /**

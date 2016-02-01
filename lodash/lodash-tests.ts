@@ -5201,17 +5201,28 @@ module TestFlowRight {
 }
 
 // _.memoize
-var testMemoizedFunction: _.MemoizedFunction;
-result = <_.MapCache>testMemoizedFunction.cache;
-interface TestMemoizedResultFn extends _.MemoizedFunction {
-    (...args: any[]): any;
+namespace TestMemoize {
+    var testMemoizedFunction: _.MemoizedFunction;
+    var cache = <_.MapCache>testMemoizedFunction.cache;
+    interface TestMemoizedResultFn extends _.MemoizedFunction {
+        (a1: string, a2: number): boolean;
+    }
+    var testMemoizeFn = (a1: string, a2: number) => a1.length > a2;
+    var testMemoizeResolverFn = (a1: string, a2: number) => a1 + a2;
+    var result: TestMemoizedResultFn;
+    result = _.memoize(testMemoizeFn);
+    result = _.memoize(testMemoizeFn, testMemoizeResolverFn);
+    result = _(testMemoizeFn).memoize().value();
+    result = _(testMemoizeFn).memoize(testMemoizeResolverFn).value();
+    result('foo', 1);
+    result.cache.get('foo1');
+    _.memoize.Cache = {
+        delete: key => false,
+        get: key => undefined,
+        has: key => false,
+        set(key, value) { return this; }
+    };
 }
-var testMemoizeFn: (...args: any[]) => any;
-var testMemoizeResolverFn: (...args: any[]) => any;
-result = <TestMemoizedResultFn>_.memoize<TestMemoizedResultFn>(testMemoizeFn);
-result = <TestMemoizedResultFn>_.memoize<TestMemoizedResultFn>(testMemoizeFn, testMemoizeResolverFn);
-result = <TestMemoizedResultFn>(_(testMemoizeFn).memoize<TestMemoizedResultFn>().value());
-result = <TestMemoizedResultFn>(_(testMemoizeFn).memoize<TestMemoizedResultFn>(testMemoizeResolverFn).value());
 
 // _.overArgs
 module TestOverArgs {
@@ -9942,6 +9953,29 @@ module TestNoop {
     }
 }
 
+namespace TestNthArg {
+    type SampleFunc = (...args: any[]) => any;
+
+    {
+        let result: SampleFunc;
+
+        result = _.nthArg<SampleFunc>();
+        result = _.nthArg<SampleFunc>(1);
+    }
+
+    {
+        let result: _.LoDashImplicitObjectWrapper<SampleFunc>;
+
+        result = _(1).nthArg<SampleFunc>();
+    }
+
+    {
+        let result: _.LoDashExplicitObjectWrapper<SampleFunc>;
+
+        result = _(1).chain().nthArg<SampleFunc>();
+    }
+}
+
 // _.over
 namespace TestOver {
     {
@@ -10162,26 +10196,14 @@ module TestTimes {
         let result: number[];
 
         result = _.times(42);
+        result = _(42).times();
     }
 
     {
         let result: TResult[];
 
         result = _.times(42, iteratee);
-        result = _.times(42, iteratee, any);
-    }
-
-    {
-        let result: _.LoDashImplicitArrayWrapper<number>;
-
-        result = _(42).times();
-    }
-
-    {
-        let result: _.LoDashImplicitArrayWrapper<TResult>;
-
         result = _(42).times(iteratee);
-        result = _(42).times(iteratee, any);
     }
 
     {
@@ -10194,7 +10216,6 @@ module TestTimes {
         let result: _.LoDashExplicitArrayWrapper<TResult>;
 
         result = _(42).chain().times(iteratee);
-        result = _(42).chain().times(iteratee, any);
     }
 }
 

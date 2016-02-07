@@ -42,7 +42,7 @@ declare module AuthChecker.Services {
         getCurrentUser(): ng.IPromise<ISessionUser>;
         refreshCurrentUser(): ng.IPromise<boolean>;
         isUserLoggedIn(): Boolean;
-        setAnonymousCookie(): ng.IHttpPromise<any>;
+        setClientIdCookie(): ng.IHttpPromise<any>;
         userHasPermission(permission: string): Boolean;
     }
 }

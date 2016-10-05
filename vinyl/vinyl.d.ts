@@ -1,7 +1,7 @@
-// Type definitions for vinyl 1.1.0
-// Project: https://github.com/wearefractal/vinyl
+// Type definitions for vinyl 1.2.0
+// Project: https://github.com/gulpjs/vinyl
 // Definitions by: vvakame <https://github.com/vvakame/>, jedmao <https://github.com/jedmao>
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
 /// <reference path="../node/node.d.ts" />
 
@@ -135,6 +135,16 @@ declare module "vinyl" {
 		 * Returns a pretty String interpretation of the File. Useful for console.log.
 		 */
 		public inspect(): string;
+
+		/**
+		 * Checks if a given object is a vinyl file.
+		 */
+		public static isVinyl(obj: any): boolean;
+
+		/**
+		 * Checks if a property is not managed internally.
+		 */
+		public static isCustomProp(name: string): boolean;
 	}
 
 	export = File;

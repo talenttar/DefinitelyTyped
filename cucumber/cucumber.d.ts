@@ -3,23 +3,30 @@
 // Definitions by: Abraão Alves <https://github.com/abraaoalves>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
-/// <reference path="../es6-promise/es6-promise.d.ts" />
+declare namespace cucumber {
 
-declare module cucumber {
-	
 	export interface CallbackStepDefinition{
-		pending : () => Thenable<any>;	
-		(errror?:any):void;
+		pending : () => PromiseLike<any>;
+		(errror?:any, pending?: string):void;
 	}
-	
+
+	export interface TableDefinition{
+		raw: () => Array<any>;
+		rows: () => Array<any>;
+		rowsHash: () => {};
+		hashes: () => {};
+	}
+
+	type StepDefinitionParam = string | CallbackStepDefinition | TableDefinition;
+
 	interface StepDefinitionCode {
-		(...stepArgs: Array<string |CallbackStepDefinition>): Thenable<any> | any | void;
+		(...stepArgs: Array<StepDefinitionParam>): PromiseLike<any> | any | void;
 	}
-	
+
 	interface StepDefinitionOptions{
-		timeout?: number;	
+		timeout?: number;
 	}
-	
+
 	export interface StepDefinitions {
 		Given(pattern: RegExp | string, options: StepDefinitionOptions, code: StepDefinitionCode): void;
 		Given(pattern: RegExp | string, code: StepDefinitionCode): void;
@@ -31,14 +38,26 @@ declare module cucumber {
 	}
 
 	interface HookScenario{
-		attach(text: string, mimeType?: string, callback?: (err?:any) => void): void;
-		isFailed() : boolean;
+		getKeyword():string;
+		getName():string;
+		getDescription():string;
+		getUri():string;
+		getLine():number;
+		getTags():string[];
+		getException():Error;
+		getAttachments():any[];
+		attach(data:any, mimeType?:string, callback?:(err?:any) => void):void;
+		isSuccessful():boolean;
+		isFailed():boolean;
+		isPending():boolean;
+		isUndefined():boolean;
+		isSkipped():boolean;
 	}
-	
+
 	interface HookCode {
 		(scenario: HookScenario, callback?: CallbackStepDefinition): void;
 	}
-	
+
 	interface AroundCode{
 		(scenario: HookScenario, runScenario?: (error:string, callback?:Function)=>void): void;
 	}

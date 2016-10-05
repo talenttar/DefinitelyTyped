@@ -1,3 +1,11 @@
+/**
+ * trRecruitUtil - 1.0.1
+ * https://recruit.talenttar.com
+ *
+ * Copyright (c) 2016 Talenttar UX Team
+ * Licensed Commercial <https://recruit.talenttar.com>
+ */
+
 ///<reference path="../angularjs/angular.d.ts"/>
 ///<reference path="../angularjs/angular-cookies.d.ts"/>
 ///<reference path="../angular-material/angular-material.d.ts"/>
@@ -13,6 +21,12 @@ declare module Util {
     function registerFactory(name: string, inlineAnnotatedFunction: Function): void;
     function registerProvider(name: string, serviceProviderConstructor: IServiceProviderClass): void;
 }
+
+declare module Util.Configs {
+    import IUtilConstants = Util.Models.IUtilConstants;
+    function StateConfig(stateProvider: ng.ui.IStateProvider, UtilConstants: IUtilConstants): void;
+}
+
 declare module Util.Controllers {
     interface IScope extends ng.IScope {
         events: AppController;
@@ -23,6 +37,7 @@ declare module Util.Controllers {
         constructor(scope: IScope, window: ng.IWindowService);
     }
 }
+
 declare module Util.Controllers {
     interface IErrorScope extends IScope {
         currentYear: string;
@@ -35,12 +50,47 @@ declare module Util.Controllers {
         onClickBackButton(): void;
     }
 }
+
+declare module Util.Interceptors {
+    import IUtilConstants = Util.Models.IUtilConstants;
+    function SecurityInterceptor(injector: ng.auto.IInjectorService, location: ng.ILocationService, UtilConstants: IUtilConstants): ng.IHttpInterceptor;
+}
+
+declare module Util.Models {
+    interface IClientDetails {
+        id: number;
+        name: string;
+    }
+}
+
+declare module Util.Models {
+    interface IRequiredCompatible {
+        browser: Boolean;
+    }
+    interface IOptionalCompatible {
+        fullScreen: Boolean;
+    }
+    interface ICompatible {
+        required: IRequiredCompatible;
+        optional: IOptionalCompatible;
+    }
+}
+
+declare module Util.Models {
+    interface IUtilConstants {
+        ApiEndpoint: string;
+        Debug: boolean;
+        ErrorStates?: any;
+    }
+}
+
 declare module Util.Models {
     interface IStateService extends ng.ui.IStateService {
         next: ng.ui.IState;
         toParams: ng.ui.IStateParamsService;
     }
 }
+
 declare module Util.Models {
     interface IClientColorDefinition {
         name?: string;
@@ -58,6 +108,7 @@ declare module Util.Models {
         generateThemesOnDemand(onDemand: boolean): any;
     }
 }
+
 declare var DEBUG: boolean;
 declare module Util.Providers {
     import IThemingProvider = Util.Models.IThemingProvider;
@@ -81,41 +132,14 @@ declare module Util.Providers {
         $get(): ConfigurationService;
     }
 }
-declare module Util.Models {
-    interface IUtilConstants {
-        ApiEndpoint: string;
-        Debug: boolean;
-        ErrorStates?: any;
-    }
-}
-declare module Util.Models {
-    interface IRequiredCompatible {
-        browser: Boolean;
-    }
-    interface IOptionalCompatible {
-    }
-    interface ICompatible {
-        required: IRequiredCompatible;
-        optional: IOptionalCompatible;
-    }
-}
-declare module Util.Models {
-    interface IClientDetails {
-        id: number;
-        name: string;
-    }
-}
-declare module Util.Configs {
-    import IUtilConstants = Util.Models.IUtilConstants;
-    function StateConfig(stateProvider: ng.ui.IStateProvider, UtilConstants: IUtilConstants): void;
-}
-declare module Util.Interceptors {
-    import IUtilConstants = Util.Models.IUtilConstants;
-    function SecurityInterceptor(injector: ng.auto.IInjectorService, location: ng.ILocationService, UtilConstants: IUtilConstants): ng.IHttpInterceptor;
-}
+
 declare module Util.Services {
     import ICompatible = Util.Models.ICompatible;
+    import IWindowService = angular.IWindowService;
+    import IRootScopeService = angular.IRootScopeService;
     class CompatibilityService {
+        protected window: IWindowService;
+        protected rootScope: IRootScopeService;
         protected q: ng.IQService;
         protected timeout: ng.ITimeoutService;
         protected deviceDetector: any;
@@ -125,31 +149,20 @@ declare module Util.Services {
             firefox: string;
             opera: string;
             safari: string;
+            msEdge: string;
         };
         static $inject: string[];
-        constructor(q: ng.IQService, timeout: ng.ITimeoutService, deviceDetector: any);
+        constructor(window: IWindowService, rootScope: IRootScopeService, q: ng.IQService, timeout: ng.ITimeoutService, deviceDetector: any);
         private _browserVersionGreaterThan(minVersion);
         isBrowserCompatible(): Boolean;
+        isFullScreenCompatible(): Boolean;
+        isFullScreen(): Boolean;
+        goFullScreen(): void;
         runCompatibilityChecker(): void;
         isRequiredPassed(): Boolean;
     }
 }
-declare module Util.Services {
-    class StateTransitionService {
-        protected rootScope: ng.IRootScopeService;
-        protected state: ng.ui.IStateService;
-        protected timeout: ng.ITimeoutService;
-        protected interval: ng.IIntervalService;
-        protected loading: boolean;
-        protected loadingPercentage: number;
-        private loadingIntervalPromise;
-        static $inject: string[];
-        constructor(rootScope: ng.IRootScopeService, state: ng.ui.IStateService, interval: ng.IIntervalService, timeout: ng.ITimeoutService);
-        isLoading(): boolean;
-        getLoadingPercentage(): number;
-        runTransitionRules(): void;
-    }
-}
+
 declare module Util.Services.Data {
     import IClientColorTheme = Util.Models.IClientColorTheme;
     import IUtilConstants = Util.Models.IUtilConstants;
@@ -167,6 +180,24 @@ declare module Util.Services.Data {
         getColorTheme(): ng.IPromise<IClientColorTheme>;
     }
 }
+
+declare module Util.Services {
+    class StateTransitionService {
+        protected rootScope: ng.IRootScopeService;
+        protected state: ng.ui.IStateService;
+        protected timeout: ng.ITimeoutService;
+        protected interval: ng.IIntervalService;
+        protected loading: boolean;
+        protected loadingPercentage: number;
+        private loadingIntervalPromise;
+        static $inject: string[];
+        constructor(rootScope: ng.IRootScopeService, state: ng.ui.IStateService, interval: ng.IIntervalService, timeout: ng.ITimeoutService);
+        isLoading(): boolean;
+        getLoadingPercentage(): number;
+        runTransitionRules(): void;
+    }
+}
+
 declare module Util.Services {
     import IClientColorTheme = Util.Models.IClientColorTheme;
     import ConfigurationService = Util.Providers.ConfigurationService;

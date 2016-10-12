@@ -1,7 +1,7 @@
 /**
- * trRecruitUtil - 1.0.1
+ * trRecruitUtil - 1.0.3
  * https://recruit.talenttar.com
- *
+ * 
  * Copyright (c) 2016 Talenttar UX Team
  * Licensed Commercial <https://recruit.talenttar.com>
  */
@@ -15,8 +15,9 @@ declare var API_ENDPOINT: string;
 declare var DEBUG: boolean;
 declare module Util {
     import IServiceProviderClass = angular.IServiceProviderClass;
+    import IControllerConstructor = angular.IControllerConstructor;
     function registerConfigs(configFunction: Function): void;
-    function registerController(name: string, controllerConstructor: Function): void;
+    function registerController(name: string, controllerConstructor: IControllerConstructor): void;
     function registerService(name: string, serviceConstructor: Function): void;
     function registerFactory(name: string, inlineAnnotatedFunction: Function): void;
     function registerProvider(name: string, serviceProviderConstructor: IServiceProviderClass): void;
